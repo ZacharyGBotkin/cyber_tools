@@ -1,4 +1,25 @@
 import psutil
-import requests
+
+def list_processes():
+    for proc in psutil.process_iter(['pid', 'name', 'username']):
+        print(proc.info)
+
 from watchdog.observers import Observer
-print("All modules loaded.")
+from watchdog.events import FileSystemEventHandler
+class MonitorHandler(FileSystemEventHandler):
+    def on_created(self, event):
+        print(f"Created: {event.src_path}")
+
+observer = Observer()
+observer.schedule(MonitorHandler(), path="/", recursive=True)
+observer.start
+
+import psutil
+
+for conn in psutil.net_connections(kind='inet'):
+    print(f"{conn.laddr} -> {conn.raddr} [{conn.status}]")
+
+import requests
+
+def report(data):
+    requests.post("http://127.0.0.1/mine", json=data)
